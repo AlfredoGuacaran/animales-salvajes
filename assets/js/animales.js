@@ -45,8 +45,10 @@ export class Animal {
     return this.getSonido();
   }
 
-  playSonido() {
-    return console.log(this.sonido);
+  playSonido(player) {
+    // player.attr('src', `assets/sounds/${this.sonido}`);
+    const audio = new Audio(`assets/sounds/${this.sonido}`);
+    audio.play();
   }
 }
 

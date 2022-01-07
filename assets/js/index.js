@@ -12,6 +12,7 @@ import { Animal, Leon, Lobo, Oso, Serpiente, Aguila } from './animales.js';
   const btnRegistrar = $('#btnRegistrar');
   const preview = $('#preview');
   const animalesContainer = $('#animales');
+  const player = $('#player');
 
   /////////////////////////CAMBIAR IMAGEN DEL PREVIEW
   const cambiarPreview = () => {
@@ -42,46 +43,49 @@ import { Animal, Leon, Lobo, Oso, Serpiente, Aguila } from './animales.js';
   };
 
   ///////////////////////////////////IMPRIMIR ANIMAL
-  const imprimirAnimal = (nombre, edad, img, comentarios, sonido) => {
-    animalesContainer.append(`
-       
+  const htmlAnimal = (img, posicionLista) => {
+    return `
         <div class="card m-1 bg-secondary" style="max-width: 8rem">
           <img src="assets/imgs/${img}" class="card-img-top foto-modal" alt="Animal" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <div class="card-body py-1">
           
-            <button class="btn btn-sonido btn-primary bg-transparent border-0" data-nombre=${nombre}>
+            <button class="btn btn-sonido btn-primary bg-transparent border-0" data-posicion=${posicionLista}>
               <i class="fas fa-volume-up">
               </i>
             </button>
           </div>
         </div>
-   `);
-
-    //Agrega audio
-    activarSonido();
+   `;
 
     //agrega modal
-    $('.foto-modal').on('click', function () {
-      $('#exampleModal').modal('show');
-    });
+    // $('.foto-modal').on('click', function () {
+    //   $('#exampleModal').modal('show');
+    //   $('.modal-body').html(`
+    //       <div class="card m-1 bg-secondary" style="">
+    //         <img src="assets/imgs/${img}" class="card-img-top" alt="Animal">
+    //         <div class="card-body py-1 text-center">
+    //           <p class="edad">5 - 8 años</p>
+    //           <p>Comentarios</p>
+    //           <p>Fue elegido como animal salvaje del año</p>
+    //         </div>
+    //       </div>
+    //   `);
+    // });
   };
 
-  $('.foto-modal').on('click', function () {
-    $('.modal-body').html(`
-          <div class="card m-1 bg-secondary" style="">
-            <img src="assets/imgs/${img}" class="card-img-top" alt="Animal">
-            <div class="card-body py-1 text-center">
-              <p class="edad">5 - 8 años</p>
-              <p>Comentarios</p>
-              <p>Fue elegido como animal salvaje del año</p>
-            </div>
-          </div>
-      `);
-  });
+  let animalesEnLista = []; // contenedor de animales
+  function imprimirListaAnimales() {
+    let html = '';
+    animalesEnLista.forEach((animal, i) => {
+      html += htmlAnimal(animal.img, i + 1);
+    });
+    animalesContainer.html(html);
+
+    console.log(animalesEnLista.length);
+  }
 
   // Codigo de captura creacion y almacenamiento de instancias
-  let animalesEnLista = []; // contenedor de animales
-  const registrarAnimal = () => {
+  function registrarAnimal() {
     const datosAnimal = [
       animalInput.val(),
       edadInput.val(),
@@ -92,19 +96,22 @@ import { Animal, Leon, Lobo, Oso, Serpiente, Aguila } from './animales.js';
     const animal = crearAnimal(...datosAnimal);
     animalesEnLista.push(animal);
     console.log(animalesEnLista);
-    imprimirAnimal(...datosAnimal);
-  };
+
+    imprimirListaAnimales();
+    activarSonido();
+  }
   btnRegistrar.on('click', registrarAnimal);
 
   ///////////////////ACTIVACION DE SONIDOS
   function activarSonido() {
     $('.btn-sonido').on('click', function (event) {
-      const animalBtnData = $(this).attr('data-nombre');
-      const sonido = animales.find(
-        (animal) => animal.name == animalBtnData
-      ).sonido;
-      const audio = new Audio(`assets/sounds/${sonido}`);
-      audio.play();
+      const animalPosicion = $(this).attr('data-posicion');
+      const animal = animalesEnLista[animalPosicion - 1];
+      if (animal.nombre == 'Leon') animal.rugir();
+      if (animal.nombre == 'Lobo') animal.aullar();
+      if (animal.nombre == 'Oso') animal.grunir();
+      if (animal.nombre == 'Serpiente') animal.sisear();
+      if (animal.nombre == 'Aguila') animal.chillar();
     });
   }
 })();
